@@ -63,6 +63,7 @@ def preprocessing(train, test):
     return train, test
 
 train, test = preprocessing(train, test)
+test_wo_pid = test.drop(["PassengerId"], axis=1)
 
 '''
 train.isnull().sum()
@@ -92,6 +93,8 @@ X = train.drop(["Survived"], axis=1)
 X['Age'] = X['Age'].astype(int)
 y = train["Survived"]
 
+X_train , X_test , y_train , y_test = train_test_split (X , y , test_size = 0.3 , random_state = 123)
+
 def get_max_coef_feature(coefs, features):
     max_abs_coef = 0
     max_coef_feature = None
@@ -104,9 +107,7 @@ def get_max_coef_feature(coefs, features):
     
     return max_coef_feature
 
-def select_model(X, y):
-
-    X_train , X_test , y_train , y_test = train_test_split (X , y , test_size = 0.3 , random_state = 123)
+def select_model(X_train , X_test , y_train , y_test):
 
     models = {
             "Logistic Regression" : LogisticRegression(),
@@ -157,7 +158,7 @@ def select_model(X, y):
         
     return accuracy_table, feature_importance_table
 
-accuracy_table, feature_importance_table = select_model(X, y)
+accuracy_table, feature_importance_table = select_model(X_train , X_test , y_train , y_test)
 
 '''
 accuracy_table.sort_values(by='Accuracy Score', ascending=False)
@@ -199,7 +200,7 @@ best_model = GradientBoostingClassifier(learning_rate=best_param['learning_rate'
 
 best_model.fit(X_train, y_train)
 
-pred = best_model.predict(test)
+pred = best_model.predict(test_wo_pid)
 
 
 ####################################################################################################
@@ -209,6 +210,7 @@ pred = best_model.predict(test)
 # Check for overfitting
 best_score = grid_search.best_score_
 
+cv_scores = grid_search.cv_results_['mean_test_score']
 index_of_best_params = grid_search.best_index_
 cv_score_of_best_params = cv_scores[index_of_best_params]
 
@@ -232,8 +234,3 @@ submission.to_csv(path + '/submission.csv', index=False)
 ####################################################################################################
 ####################################################################################################
 ####################################################################################################
-
-
-
-
-
