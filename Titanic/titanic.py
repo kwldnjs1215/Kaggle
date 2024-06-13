@@ -220,6 +220,8 @@ best_model_coef_table = pd.DataFrame(columns=['Feature', 'Importance'])
 for feature, coef in zip(best_model.feature_importances_, X_train.columns):
     best_model_coef_table = pd.concat([best_model_coef_table, pd.DataFrame({'Feature': [coef], 'Importance': [feature]})], ignore_index=True)
 
+best_model_coef_table = best_model_coef_table.sort_values(by='Importance', ascending=False)
+
 ####################################################################################################
 ####################################################################################################
 ####################################################################################################
